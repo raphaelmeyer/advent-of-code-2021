@@ -1,0 +1,36 @@
+name: advent-of-code
+version: 0.1.0.0
+github: "raphaelmeyer/advent-of-code-2021"
+license: MIT
+
+dependencies:
+  - base >= 4.7 && < 5
+
+ghc-options:
+  - -Wall
+  - -Werror
+  - -O2
+
+library:
+  source-dirs: src
+  dependencies:
+    - text
+
+executables:
+  day-01-exe:
+    main: Main.hs
+    source-dirs: app/Day01
+    dependencies:
+      - advent-of-code
+
+tests:
+  test:
+    main: Spec.hs
+    source-dirs: test
+    when:
+      - condition: false
+        other-modules: Paths_advent_of_code
+    dependencies:
+      - advent-of-code
+      - hspec
+      - hspec-discover
