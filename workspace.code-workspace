@@ -1,19 +1,20 @@
 {
 	"folders": [
 		{
+			"name": "Project",
 			"path": "."
+		},
+		{
+			"name": "Haskell",
+			"path": "haskell"
 		}
 	],
-	"extensions": {
-		"recommendations": [
-			"haskell.haskell"
-		]
-	},
 	"settings": {
 		"editor.renderWhitespace": "boundary",
 		"editor.tabSize": 2,
 		"editor.formatOnSave": true,
-		"haskell.formattingProvider": "ormolu",
-		"haskell.hlintOn": true
+		"files.exclude": {
+			"haskell/": true
+		}
 	}
 }
