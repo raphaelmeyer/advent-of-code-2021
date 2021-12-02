@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Configuration",
+      "generator": "Ninja",
+      "binaryDir": "${workspaceFolder}/_build",
+      "toolchainFile": "${workspaceFolder}/cmake/toolchain.cmake"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

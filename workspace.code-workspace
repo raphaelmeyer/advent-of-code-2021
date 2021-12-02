@@ -7,6 +7,10 @@
 		{
 			"name": "Haskell",
 			"path": "haskell"
+		},
+		{
+			"name": "C++",
+			"path": "cpp"
 		}
 	],
 	"settings": {
@@ -14,7 +18,8 @@
 		"editor.tabSize": 2,
 		"editor.formatOnSave": true,
 		"files.exclude": {
-			"haskell/": true
+			"haskell/": true,
+			"cpp/": true
 		}
 	}
 }

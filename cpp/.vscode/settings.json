@@ -1,0 +1,8 @@
+{
+  "editor.renderWhitespace": "boundary",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "C_Cpp.clang_format_style": "LLVM",
+  "C_Cpp.formatting": "clangFormat"
+}

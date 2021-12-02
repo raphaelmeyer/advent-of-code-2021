@@ -13,5 +13,5 @@ main = do
   let incWindows = Sonar.countIncrease windowSums
 
   putStrLn "# Day 02 #"
-  putStrLn $ "Part I : " ++ show increase
+  putStrLn $ "Part  I : " ++ show increase
   putStrLn $ "Part II : " ++ show incWindows
