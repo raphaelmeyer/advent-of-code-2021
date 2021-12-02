@@ -4,5 +4,6 @@
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,
   "C_Cpp.clang_format_style": "LLVM",
-  "C_Cpp.formatting": "clangFormat"
+  "C_Cpp.formatting": "clangFormat",
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
