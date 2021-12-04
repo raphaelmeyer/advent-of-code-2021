@@ -23,6 +23,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-03-exe:
+    main: Main.hs
+    source-dirs: app/Day03
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs
@@ -34,3 +40,4 @@ tests:
       - advent-of-code
       - hspec
       - hspec-discover
+      - text

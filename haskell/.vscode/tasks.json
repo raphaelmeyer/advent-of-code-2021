@@ -12,6 +12,9 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "presentation": {
+        "clear": true
+      },
       "problemMatcher": []
     },
     {
@@ -25,17 +28,35 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "presentation": {
+        "clear": true
+      },
       "problemMatcher": []
     },
     {
-      "label": "run ...",
+      "label": "run program",
       "type": "shell",
       "group": "none",
-      "command": "stack run day-01-exe",
+      "command": "stack run ${input:day}-exe",
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "presentation": {
+        "clear": true
+      },
       "problemMatcher": []
+    },
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "day",
+      "description": "Which executable?",
+      "options": [
+        "day-01",
+        "day-03"
+      ],
+      "default": "day-03"
     }
   ]
 }
