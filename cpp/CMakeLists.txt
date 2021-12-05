@@ -17,6 +17,6 @@ target_compile_options(settings INTERFACE
 
 add_subdirectory(vendor)
 
-foreach(day "01" "02")
+foreach(day "01" "02" "04")
   add_subdirectory("src/day-${day}")
 endforeach()

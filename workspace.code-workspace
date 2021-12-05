@@ -22,6 +22,7 @@
 			"cpp/": true
 		},
 		"C_Cpp.default.browse.path": [],
-		"C_Cpp.autoAddFileAssociations": false
+		"C_Cpp.autoAddFileAssociations": false,
+		"cmake.clearOutputBeforeBuild": true
 	}
 }
