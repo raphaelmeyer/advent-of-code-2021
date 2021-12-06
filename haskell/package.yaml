@@ -15,6 +15,8 @@ library:
   source-dirs: src
   dependencies:
     - text
+    - megaparsec
+    - containers
 
 executables:
   day-01-exe:
@@ -26,6 +28,12 @@ executables:
   day-03-exe:
     main: Main.hs
     source-dirs: app/Day03
+    dependencies:
+      - advent-of-code
+
+  day-05-exe:
+    main: Main.hs
+    source-dirs: app/Day05
     dependencies:
       - advent-of-code
 
@@ -41,3 +49,4 @@ tests:
       - hspec
       - hspec-discover
       - text
+      - containers
