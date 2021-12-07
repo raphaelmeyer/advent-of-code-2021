@@ -43,6 +43,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-07-exe:
+    main: Main.hs
+    source-dirs: app/Day07
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs

@@ -53,12 +53,13 @@
       "id": "day",
       "description": "Which executable?",
       "options": [
+        "day-07",
         "day-06",
         "day-05",
         "day-03",
         "day-01"
       ],
-      "default": "day-06"
+      "default": "day-07"
     }
   ]
 }
