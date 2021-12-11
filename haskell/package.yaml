@@ -49,6 +49,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-09-exe:
+    main: Main.hs
+    source-dirs: app/Day09
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs
