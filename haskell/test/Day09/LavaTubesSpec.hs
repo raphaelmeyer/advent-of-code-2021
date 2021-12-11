@@ -17,6 +17,15 @@ exampleInput =
 
 spec :: Spec
 spec = do
+  describe "example" $ do
+    let grid = LavaTubes.parseInput exampleInput
+    it "returns the risk level sum" $ do
+      let riskLevelSum = LavaTubes.riskLevelSum grid
+      riskLevelSum `shouldBe` 15
+    it "" $ do
+      let basinSize = LavaTubes.basinSize grid
+      basinSize `shouldBe` 1134
+
   describe "parse input" $ do
     it "parses input grid" $ do
       let input = LavaTubes.parseInput ["12345", "67890", "02468", "97531"]
@@ -28,8 +37,8 @@ spec = do
       let lowPoints = LavaTubes.findLowPoints grid
       lowPoints `shouldMatchList` [0, 1, 5, 5]
 
-  describe "example" $ do
-    it "returns the risk level sum" $ do
+  describe "find basins" $ do
+    it "finds all basins" $ do
       let grid = LavaTubes.parseInput exampleInput
-      let riskLevelSum = LavaTubes.riskLevelSum grid
-      riskLevelSum `shouldBe` 15
+      let basins = LavaTubes.findBasins grid
+      basins `shouldMatchList` [3, 9, 9, 14]

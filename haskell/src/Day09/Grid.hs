@@ -1,10 +1,10 @@
 module Day09.Grid where
 
-import qualified Data.Maybe as Maybe (mapMaybe)
-
 data Cursor a = Cursor {getRow :: ([a], [a]), getUp :: [a], getDown :: [a]} | Invalid deriving (Show, Eq)
 
 data Grid a = Grid {getCursor :: Cursor a, getRows :: [[a]]} | Done deriving (Show, Eq)
+
+data Neighbors a = Neighbors {nbLeft :: Maybe a, nbRight :: Maybe a, nbUp :: Maybe a, nbDown :: Maybe a} deriving (Show, Eq)
 
 fromList :: [[a]] -> Grid a
 fromList (row : down : rest) = Grid {getCursor = Cursor {getRow = ([], row), getUp = [], getDown = down}, getRows = row : down : rest}
@@ -28,7 +28,7 @@ nextRow [row, next] = Grid {getCursor = Cursor {getRow = ([], next), getUp = row
 nextRow (row : next : rows) = Grid {getCursor = Cursor {getRow = ([], next), getUp = row, getDown = head rows}, getRows = next : rows}
 nextRow _ = Done
 
-foldWithNeighbors :: (b -> (a, [a]) -> b) -> b -> Grid a -> b
+foldWithNeighbors :: (b -> (a, Neighbors a) -> b) -> b -> Grid a -> b
 foldWithNeighbors _ acc Done = acc
 foldWithNeighbors f acc grid = f acc' (value, neighbors)
   where
@@ -40,9 +40,9 @@ getValue :: Grid a -> a
 getValue Grid {getCursor = Cursor {getRow = (_, value : _)}} = value
 getValue _ = error "No value"
 
-getNeighbors :: Grid a -> [a]
-getNeighbors Grid {getCursor = cursor} = Maybe.mapMaybe (\f -> f cursor) [neighborLeft, neighborRight, neighborUp, neighborDown]
-getNeighbors _ = []
+getNeighbors :: Grid a -> Neighbors a
+getNeighbors Grid {getCursor = cursor} = Neighbors {nbLeft = neighborLeft cursor, nbRight = neighborRight cursor, nbUp = neighborUp cursor, nbDown = neighborDown cursor}
+getNeighbors _ = Neighbors {nbLeft = Nothing, nbRight = Nothing, nbUp = Nothing, nbDown = Nothing}
 
 neighborLeft :: Cursor a -> Maybe a
 neighborLeft Cursor {getRow = ([left], _)} = Just left

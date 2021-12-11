@@ -8,7 +8,8 @@ main = do
   let grid = LavaTubes.parseInput input
 
   let riskLevelSum = LavaTubes.riskLevelSum grid
+  let basinSize = LavaTubes.basinSize grid
 
   putStrLn "# Day 09 #"
   putStrLn $ "Part  I : " ++ show riskLevelSum
-  putStrLn $ "Part II : " ++ show (0 :: Int)
+  putStrLn $ "Part II : " ++ show basinSize
