@@ -23,6 +23,7 @@
 		},
 		"C_Cpp.default.browse.path": [],
 		"C_Cpp.autoAddFileAssociations": false,
-		"cmake.clearOutputBeforeBuild": true
+		"cmake.clearOutputBeforeBuild": true,
+		"terminal.integrated.enablePersistentSessions": false
 	}
 }
