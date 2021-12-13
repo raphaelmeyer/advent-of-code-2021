@@ -8,9 +8,9 @@ main = do
 
   let graph = Passage.parseInput input
 
-  let paths = Passage.searchPaths graph
-  let numPaths = Passage.countPaths paths
+  let paths = Passage.countPaths graph
+  let morePaths = Passage.countMorePaths graph
 
   putStrLn "# Day 12 #"
-  putStrLn $ "Part  I : " ++ show numPaths
-  putStrLn $ "Part II : " ++ show (0 :: Int)
+  putStrLn $ "Part  I : " ++ show paths
+  putStrLn $ "Part II : " ++ show morePaths

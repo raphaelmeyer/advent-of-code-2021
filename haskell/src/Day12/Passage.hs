@@ -13,8 +13,6 @@ data Node = Big Text.Text | Small Text.Text deriving (Eq, Show, Ord)
 
 type Graph = Map.Map Node (Set.Set Node)
 
-data Path = Path deriving (Eq, Show)
-
 readInput :: String -> IO [Text.Text]
 readInput filename = readFile filename <&> Text.lines . Text.pack
 
@@ -31,22 +29,25 @@ parseInput input = foldr insertVertice Map.empty vertices
 insertVertice :: (Node, Node) -> Graph -> Graph
 insertVertice (a, b) = insert' a b . insert' b a
   where
+    insert' _ (Small "start") graph = graph
+    insert' (Small "end") _ graph = graph
     insert' from to graph = Map.alter (alter' to) from graph
     alter' to Nothing = Just (Set.singleton to)
     alter' to (Just nodes) = Just (Set.insert to nodes)
 
-searchPaths :: Graph -> [Path]
-searchPaths = searchPaths' []
+countPaths :: Graph -> Int
+countPaths = searchPaths [] False
 
-searchPaths' :: [Node] -> Graph -> [Path]
-searchPaths' [] graph = searchPaths' [Small "start"] graph
-searchPaths' (Small "end" : _) _ = [Path]
-searchPaths' (node : nodes) graph = Set.foldr visit [] (graph Map.! node)
+countMorePaths :: Graph -> Int
+countMorePaths = searchPaths [] True
+
+searchPaths :: [Node] -> Bool -> Graph -> Int
+searchPaths [] twice graph = searchPaths [Small "start"] twice graph
+searchPaths (Small "end" : _) _ _ = 1
+searchPaths (node : nodes) twice graph = Set.foldr visit 0 (graph Map.! node)
   where
     visit (Small name) paths
-      | Small name `notElem` nodes = searchPaths' (Small name : node : nodes) graph ++ paths
+      | Small name `notElem` nodes = searchPaths (Small name : node : nodes) twice graph + paths
+      | twice = searchPaths (Small name : node : nodes) False graph + paths
       | otherwise = paths
-    visit node' paths = searchPaths' (node' : node : nodes) graph ++ paths
-
-countPaths :: [Path] -> Int
-countPaths = length
+    visit node' paths = searchPaths (node' : node : nodes) twice graph + paths
