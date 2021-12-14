@@ -67,6 +67,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-13-exe:
+    main: Main.hs
+    source-dirs: app/Day13
+    dependencies:
+      - advent-of-code
+      - text
 
 tests:
   test:
