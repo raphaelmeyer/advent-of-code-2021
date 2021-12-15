@@ -7,27 +7,6 @@
 
 namespace chiton {
 
-std::vector<std::size_t> RiskMap::paths(std::size_t location) const {
-  std::vector<std::size_t> p{};
-
-  auto const x = location % width;
-  auto const y = location / width;
-
-  if (x > 0) {
-    p.push_back(index({x - 1, y}));
-  }
-  if (x < width - 1) {
-    p.push_back(index({x + 1, y}));
-  }
-  if (y > 0) {
-    p.push_back(index({x, y - 1}));
-  }
-  if (y < height - 1) {
-    p.push_back(index({x, y + 1}));
-  }
-  return p;
-}
-
 RiskMap parse_file(std::filesystem::path filename) {
   std::ifstream file{filename};
   return parse_input(file);
@@ -54,7 +33,33 @@ RiskMap parse_input(std::istream &input) {
                          });
 }
 
-RiskMap make_full_map(RiskMap const &risk_map) { return risk_map; }
+RiskMap make_full_map(RiskMap const &risk_map) {
+  RiskMap full_map{};
+  full_map.width = 5 * risk_map.width;
+  full_map.height = 5 * risk_map.height;
+
+  auto calc_risk = [](auto x, auto y, auto risk) {
+    auto new_risk = x + y + risk;
+    while (new_risk > 9) {
+      new_risk -= 9;
+    }
+    return new_risk;
+  };
+
+  for (std::size_t tile_y = 0; tile_y < 5; ++tile_y) {
+    for (std::size_t source_y = 0; source_y < risk_map.height; ++source_y) {
+      for (std::size_t tile_x = 0; tile_x < 5; ++tile_x) {
+        for (std::size_t source_x = 0; source_x < risk_map.height; ++source_x) {
+          auto const source = risk_map.index({source_x, source_y});
+          full_map.levels.push_back(
+              calc_risk(tile_x, tile_y, risk_map.levels.at(source)));
+        }
+      }
+    }
+  }
+
+  return full_map;
+}
 
 int risk_level(RiskMap const &risk_map) {
   struct Location {
@@ -63,6 +68,7 @@ int risk_level(RiskMap const &risk_map) {
   };
 
   std::vector<Location> locations{risk_map.levels.size(), Location{}};
+  std::map<std::size_t, int> unvisited{};
 
   auto const target = risk_map.levels.size() - 1;
 
@@ -70,26 +76,27 @@ int risk_level(RiskMap const &risk_map) {
   locations.at(current).cost = 0;
 
   while (current != target) {
-    for (auto next : risk_map.paths(current)) {
+
+    risk_map.for_each_neighbor(current, [&](auto next) {
       auto &next_location = locations.at(next);
       if (not next_location.visited) {
         auto const updated_cost =
             locations.at(current).cost + risk_map.levels.at(next);
         next_location.cost = std::min(updated_cost, next_location.cost);
+        unvisited[next] = next_location.cost;
       }
-    }
-    locations.at(current).visited = true;
+    });
 
-    int next_cost = std::numeric_limits<int>::max();
-    for (std::size_t i = 0; i < locations.size(); ++i) {
-      auto &location = locations.at(i);
-      if (not location.visited) {
-        if (location.cost < next_cost) {
-          next_cost = location.cost;
-          current = i;
-        }
-      }
+    locations.at(current).visited = true;
+    unvisited.erase(current);
+
+    auto it_next =
+        std::min_element(unvisited.begin(), unvisited.end(),
+                         [](auto a, auto b) { return a.second < b.second; });
+    if (it_next == unvisited.end()) {
+      throw std::logic_error{"no solution"};
     }
+    current = it_next->first;
   }
 
   return locations.back().cost;

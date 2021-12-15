@@ -13,7 +13,22 @@ struct RiskMap {
   std::size_t height;
   std::vector<int> levels{};
 
-  std::vector<std::size_t> paths(std::size_t location) const;
+  template <typename Func>
+  void for_each_neighbor(std::size_t location, Func func) const {
+    auto const x = location % width;
+    if (x > 0) {
+      func(location - 1);
+    }
+    if (x + 1 < width) {
+      func(location + 1);
+    }
+    if (location >= width) {
+      func(location - width);
+    }
+    if (location + width < levels.size()) {
+      func(location + width);
+    }
+  }
 
   using Pos = std::tuple<std::size_t, std::size_t>;
   std::size_t index(Pos pos) const {
