@@ -74,6 +74,12 @@ executables:
       - advent-of-code
       - text
 
+  day-16-exe:
+    main: Main.hs
+    source-dirs: app/Day16
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs
