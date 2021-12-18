@@ -12,9 +12,13 @@ data Bit = Zero | One deriving (Eq, Show)
 
 type Transmission = [Bit]
 
+type Version = Int
+
+data Operation = Sum | Product | Min | Max | Greater | Less | Equal deriving (Eq, Show)
+
 data Packet
-  = Literal Int Int
-  | Operator Int [Packet]
+  = Literal Version Int
+  | Operator Version Operation [Packet]
   deriving (Eq, Show)
 
 type TxParser a = Parser.Parser Transmission a
@@ -47,9 +51,27 @@ parseInput = concatMap nibble . Text.unpack
 decode :: Transmission -> Packet
 decode = fst . Maybe.fromJust . Parser.parse packet
 
+evaluate :: Packet -> Int
+evaluate (Literal _ n) = n
+evaluate (Operator _ op ps) = op' . map evaluate $ ps
+  where
+    op' = case op of
+      Sum -> sum
+      Product -> product
+      Min -> minimum
+      Max -> maximum
+      Greater -> gt
+      Less -> lt
+      Equal -> eq
+    lt [a, b] = if a < b then 1 else 0
+    lt _ = undefined
+    gt = lt . reverse
+    eq [a, b] = if a == b then 1 else 0
+    eq _ = undefined
+
 versionSum :: Packet -> Int
 versionSum (Literal v _) = v
-versionSum (Operator v ps) = v + (sum . map versionSum) ps
+versionSum (Operator v _ ps) = v + (sum . map versionSum) ps
 
 -- Parsing
 
@@ -58,7 +80,7 @@ versionSum (Operator v ps) = v + (sum . map versionSum) ps
 packet :: TxParser Packet
 packet = literal <|> operator
 
-version :: TxParser Int
+version :: TxParser Version
 version = value <$> bits 3
 
 -- literal
@@ -77,10 +99,17 @@ litValue = value <$> groups
 -- operator
 
 operator :: TxParser Packet
-operator = Operator <$> version <* opType <*> (opPacketsType0 <|> opPacketsType1)
+operator = Operator <$> version <*> opType <*> (opPacketsType0 <|> opPacketsType1)
 
-opType :: TxParser ()
-opType = () <$ bits 3
+opType :: TxParser Operation
+opType =
+  (Sum <$ zero <* zero <* zero)
+    <|> (Product <$ zero <* zero <* one)
+    <|> (Min <$ zero <* one <* zero)
+    <|> (Max <$ zero <* one <* one)
+    <|> (Greater <$ one <* zero <* one)
+    <|> (Less <$ one <* one <* zero)
+    <|> (Equal <$ one <* one <* one)
 
 opPacketsType0 :: TxParser [Packet]
 opPacketsType0 = do

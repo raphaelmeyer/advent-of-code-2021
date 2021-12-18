@@ -49,4 +49,4 @@ subparse p input = case parse p input of
 
 exactly :: Int -> Parser i a -> Parser i [a]
 exactly 0 _ = pure []
-exactly n p = (:) <$> p <*> exactly (n -1) p
+exactly n p = (:) <$> p <*> exactly (n - 1) p

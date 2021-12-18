@@ -11,6 +11,8 @@ main = do
   let packet = Bits.decode transmission
   let versionSum = Bits.versionSum packet
 
+  let result = Bits.evaluate packet
+
   putStrLn "# Day 16 #"
   putStrLn $ "Part  I : " ++ show versionSum
-  putStrLn $ "Part II : " ++ show (0 :: Int)
+  putStrLn $ "Part II : " ++ show result
