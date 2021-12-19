@@ -1,4 +1,4 @@
-module Day16.Parser where
+module Util.Parser where
 
 import Control.Applicative (Alternative (empty, (<|>)))
 

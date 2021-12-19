@@ -80,6 +80,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-17-exe:
+    main: Main.hs
+    source-dirs: app/Day17
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs

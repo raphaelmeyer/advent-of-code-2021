@@ -6,7 +6,7 @@ import Control.Applicative (Alternative (some), (<|>))
 import Data.Functor ((<&>))
 import qualified Data.Maybe as Maybe
 import qualified Data.Text as Text
-import qualified Day16.Parser as Parser
+import qualified Util.Parser as Parser
 
 data Bit = Zero | One deriving (Eq, Show)
 
