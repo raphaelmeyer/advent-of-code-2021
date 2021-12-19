@@ -86,6 +86,12 @@ executables:
     dependencies:
       - advent-of-code
 
+  day-18-exe:
+    main: Main.hs
+    source-dirs: app/Day18
+    dependencies:
+      - advent-of-code
+
 tests:
   test:
     main: Spec.hs
