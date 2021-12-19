@@ -2,6 +2,7 @@ module Day18.Snailfish where
 
 import Control.Applicative (Alternative ((<|>)))
 import Data.Functor ((<&>))
+import qualified Data.List as List
 import qualified Data.Maybe as Maybe
 import qualified Data.Text as Text
 import qualified Day18.Number as S
@@ -20,6 +21,14 @@ sum = foldl1 add
 magnitude :: S.Number -> Int
 magnitude (S.Regular n) = n
 magnitude (S.Pair left right) = 3 * magnitude left + 2 * magnitude right
+
+maxMagnitude :: [S.Number] -> Int
+maxMagnitude numbers = maximum . map magnitude . concatMap sums $ pairs
+  where
+    pairs = [(x, y) | (x : ys) <- List.tails numbers, y <- ys]
+    sums (a, b) = [sum [a, b], sum [b, a]]
+
+-- snailfish math
 
 reduce :: S.Number -> S.Number
 reduce number = Maybe.fromMaybe number ((explode number <|> split number) >>= Just . reduce)

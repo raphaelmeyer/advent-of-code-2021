@@ -38,7 +38,7 @@ otherInput =
 
 spec :: Spec
 spec = do
-  describe "example" $ do
+  describe "example part 1" $ do
     it "calculates the magnitude of the sum" $ do
       let homework = Snailfish.parseInput exampleInput
       let result = Snailfish.sum homework
@@ -52,6 +52,13 @@ spec = do
       let magnitude = Snailfish.magnitude result
 
       magnitude `shouldBe` 3488
+
+  describe "example part 2" $ do
+    it "calculates the maximum magnitude of any pair added" $ do
+      let homework = Snailfish.parseInput exampleInput
+      let maxMagnitude = Snailfish.maxMagnitude homework
+
+      maxMagnitude `shouldBe` 3993
 
   describe "calculate magnitude" $ do
     it "calculates the magnitude" $ do
