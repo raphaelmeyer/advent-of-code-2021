@@ -37,7 +37,7 @@
       "label": "run program",
       "type": "shell",
       "group": "none",
-      "command": "stack run ${input:day}-exe",
+      "command": "stack run aoc",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -46,27 +46,5 @@
       },
       "problemMatcher": []
     },
-  ],
-  "inputs": [
-    {
-      "type": "pickString",
-      "id": "day",
-      "description": "Which executable?",
-      "options": [
-        "day-18",
-        "day-17",
-        "day-16",
-        "day-13",
-        "day-12",
-        "day-10",
-        "day-09",
-        "day-07",
-        "day-06",
-        "day-05",
-        "day-03",
-        "day-01"
-      ],
-      "default": "day-18"
-    }
   ]
 }
