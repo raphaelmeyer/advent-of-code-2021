@@ -1,9 +1,9 @@
-module Main where
+module Day16 where
 
 import qualified Day16.Bits as Bits
 
-main :: IO ()
-main = do
+run :: IO ()
+run = do
   input <- Bits.readInput "data/day-16.txt"
 
   let transmission = Bits.parseInput input
@@ -13,6 +13,8 @@ main = do
 
   let result = Bits.evaluate packet
 
+  putStrLn ""
   putStrLn "# Day 16 #"
+  putStrLn ""
   putStrLn $ "Part  I : " ++ show versionSum
   putStrLn $ "Part II : " ++ show result

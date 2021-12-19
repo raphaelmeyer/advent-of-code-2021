@@ -62,8 +62,8 @@ countDots :: Paper -> Int
 countDots = length
 
 showPaper :: Paper -> Text.Text
-showPaper paper = Text.intercalate "\n" [line y | y <- [0 .. maxY]]
+showPaper paper = Text.intercalate "\o33[0m\n" [line y | y <- [0 .. maxY]]
   where
     maxX = maximum . map fst $ paper
     maxY = maximum . map snd $ paper
-    line y = Text.concat [if (x, y) `elem` paper then "x" else " " | x <- [0 .. maxX]]
+    line y = Text.concat [if (x, y) `elem` paper then "\o33[43m#" else "\o33[0m " | x <- [0 .. maxX]]

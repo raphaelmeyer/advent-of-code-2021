@@ -5,6 +5,7 @@ license: MIT
 
 dependencies:
   - base >= 4.7 && < 5
+  - text
 
 ghc-options:
   - -Wall
@@ -14,81 +15,13 @@ ghc-options:
 library:
   source-dirs: src
   dependencies:
-    - text
     - megaparsec
     - containers
 
 executables:
-  day-01-exe:
+  aoc:
     main: Main.hs
-    source-dirs: app/Day01
-    dependencies:
-      - advent-of-code
-
-  day-03-exe:
-    main: Main.hs
-    source-dirs: app/Day03
-    dependencies:
-      - advent-of-code
-
-  day-05-exe:
-    main: Main.hs
-    source-dirs: app/Day05
-    dependencies:
-      - advent-of-code
-
-  day-06-exe:
-    main: Main.hs
-    source-dirs: app/Day06
-    dependencies:
-      - advent-of-code
-
-  day-07-exe:
-    main: Main.hs
-    source-dirs: app/Day07
-    dependencies:
-      - advent-of-code
-
-  day-09-exe:
-    main: Main.hs
-    source-dirs: app/Day09
-    dependencies:
-      - advent-of-code
-
-  day-10-exe:
-    main: Main.hs
-    source-dirs: app/Day10
-    dependencies:
-      - advent-of-code
-
-  day-12-exe:
-    main: Main.hs
-    source-dirs: app/Day12
-    dependencies:
-      - advent-of-code
-
-  day-13-exe:
-    main: Main.hs
-    source-dirs: app/Day13
-    dependencies:
-      - advent-of-code
-      - text
-
-  day-16-exe:
-    main: Main.hs
-    source-dirs: app/Day16
-    dependencies:
-      - advent-of-code
-
-  day-17-exe:
-    main: Main.hs
-    source-dirs: app/Day17
-    dependencies:
-      - advent-of-code
-
-  day-18-exe:
-    main: Main.hs
-    source-dirs: app/Day18
+    source-dirs: app/AoC
     dependencies:
       - advent-of-code
 
@@ -103,5 +36,4 @@ tests:
       - advent-of-code
       - hspec
       - hspec-discover
-      - text
       - containers
