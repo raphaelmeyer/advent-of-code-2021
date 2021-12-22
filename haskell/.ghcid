@@ -1,0 +1,2 @@
+--command "stack ghci advent-of-code:lib advent-of-code:test" --restart "package.yaml" --test "main"
+

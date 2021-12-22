@@ -4,12 +4,45 @@
 
 ## Getting Started
 
-### haskell
+### Haskell
 
 Run all tests
 
-    stack test
+    haskell$ stack test
+
+Run executable
+
+    haskell$ stack run aoc
+
+Live feedback with _ghcid_
+
+    haskell$ stack exec ghcid
+
+If required install ghcid with `stack install ghcid`.
+
+### C++
+
+Configure build directory
+
+    cpp$ cmake -S . -B _build
+
+Build and run tests
+
+    cpp$ cmake --build _build
+    cpp$ cmake --build _build --target test
 
 Run an executable
 
-    stack run day-01-exe
+    cpp$ _build/src/day-01/day-01-exe
+
+## VS Code Setup
+
+Open VS Code workspace `workspace.code-workspace` and install the recommended plugins.
+
+### C++
+
+Use the settings from cmake presets file.
+
+### Haskell
+
+Select _Terminal > Run Tasks..._ for building and running tests.
