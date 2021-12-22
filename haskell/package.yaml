@@ -6,6 +6,8 @@ license: MIT
 dependencies:
   - base >= 4.7 && < 5
   - text
+  - containers
+  - vector
 
 ghc-options:
   - -Wall
@@ -16,7 +18,6 @@ library:
   source-dirs: src
   dependencies:
     - megaparsec
-    - containers
 
 executables:
   aoc:
@@ -36,4 +37,3 @@ tests:
       - advent-of-code
       - hspec
       - hspec-discover
-      - containers
