@@ -19,6 +19,12 @@ TEST_CASE("example input") {
     auto const score = dirac::practice_score(result);
     REQUIRE(score == 739785);
   }
+
+  SUBCASE("part 2") {
+    auto const wins = dirac::play(start);
+    auto const winning = std::max(wins[dirac::One], wins[dirac::Two]);
+    REQUIRE(winning == 444356092776315);
+  }
 }
 
 TEST_CASE("parse input") {

@@ -10,9 +10,10 @@ constexpr std::size_t One = 0;
 constexpr std::size_t Two = 1;
 
 using Track = std::array<int, 2>;
+using Score = std::array<int, 2>;
 
 struct Practice {
-  std::array<int, 2> score{};
+  Score score{};
   int rolls{};
 };
 

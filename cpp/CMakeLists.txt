@@ -13,6 +13,7 @@ target_compile_options(settings INTERFACE
   "-Wall"
   "-Wextra"
   "-Werror"
+  "-g"
 )
 
 add_subdirectory(vendor)
