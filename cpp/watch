@@ -1,0 +1,26 @@
+#!/bin/bash
+
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+build() {
+  cmake --build _build
+  CTEST_OUTPUT_ON_FAILURE=1 cmake --build _build --target test
+}
+
+cd ${script_dir}
+
+clear
+
+if [ ! -d _build ] ; then
+  cmake -S . -B _build -G Ninja
+fi
+
+build
+
+inotifywait -r -e close_write,create -m CMakeLists.txt src |
+while read events ; do
+  clear
+  echo "Trigger: ${events}"
+  echo
+  build
+done
