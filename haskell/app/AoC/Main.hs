@@ -1,5 +1,8 @@
 module Main where
 
+import Control.Applicative ((<**>))
+import qualified Control.Applicative as Applicative
+import qualified Data.Map as Map
 import qualified Day01
 import qualified Day03
 import qualified Day05
@@ -14,20 +17,40 @@ import qualified Day17
 import qualified Day18
 import qualified Day20
 import qualified Day22
+import qualified Options.Applicative as Opt
+
+data Options = Options {getDay :: Maybe Int} deriving (Show)
+
+options :: Opt.Parser Options
+options = Options <$> Applicative.optional (Opt.option Opt.auto $ Opt.long "day" <> Opt.help "run solution of a single day" <> Opt.metavar "DAY")
+
+solutions :: Map.Map Int (IO ())
+solutions =
+  Map.fromList
+    [ (1, Day01.run),
+      (3, Day03.run),
+      (5, Day05.run),
+      (6, Day06.run),
+      (7, Day07.run),
+      (9, Day09.run),
+      (10, Day10.run),
+      (12, Day12.run),
+      (13, Day13.run),
+      (16, Day16.run),
+      (17, Day17.run),
+      (18, Day18.run),
+      (20, Day20.run),
+      (22, Day22.run)
+    ]
 
 main :: IO ()
 main = do
-  Day01.run
-  Day03.run
-  Day05.run
-  Day06.run
-  Day07.run
-  Day09.run
-  Day10.run
-  Day12.run
-  Day13.run
-  Day16.run
-  Day17.run
-  Day18.run
-  Day20.run
-  Day22.run
+  opts <- Opt.execParser (Opt.info (options <**> Opt.helper) (Opt.fullDesc <> Opt.progDesc "run advent of code 2021 solutions" <> Opt.header "Advent of Code 2021"))
+  runSolutions (getDay opts)
+
+runSolutions :: Maybe Int -> IO ()
+runSolutions Nothing = sequence_ . Map.elems $ solutions
+runSolutions (Just day) = runSolution $ Map.lookup day solutions
+  where
+    runSolution (Just solution) = solution
+    runSolution Nothing = putStrLn $ "No solution for day " ++ show day

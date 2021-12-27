@@ -10,9 +10,13 @@ Run all tests
 
     haskell$ stack test
 
-Run executable
+Run all solutions
 
     haskell$ stack run aoc
+
+Run solution for a specific day
+
+    haskell$ stack run aoc -- --day DAY
 
 Live feedback with _ghcid_
 

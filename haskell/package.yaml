@@ -25,6 +25,7 @@ executables:
     source-dirs: app/AoC
     dependencies:
       - advent-of-code
+      - optparse-applicative
 
 tests:
   test:
