@@ -7,12 +7,7 @@ namespace amphipod {
 
 namespace {
 
-std::map<std::pair<Types, Locations>, int> path_lengths{
-    {{Location::A_Bottom, Location::A_Top}, 1},
-    {{Location::B_Bottom, Location::B_Top}, 1},
-    {{Location::C_Bottom, Location::C_Top}, 1},
-    {{Location::D_Bottom, Location::D_Top}, 1},
-
+PathLengths const common_path_lengths{
     {{Location::A_Top, Location::LeftHall}, 2},
     {{Location::A_Top, Location::LeftCenter}, 2},
 
@@ -32,11 +27,6 @@ std::map<std::pair<Types, Locations>, int> path_lengths{
     {{Location::RightCenter, Location::RightHall}, 2},
     {{Location::RightHall, Location::RightWall}, 1}};
 
-constexpr std::array const rooms{Location::A_Bottom, Location::B_Bottom,
-                                 Location::C_Bottom, Location::D_Bottom,
-                                 Location::A_Top,    Location::B_Top,
-                                 Location::C_Top,    Location::D_Top};
-
 constexpr std::array const halls{Location::LeftWall,    Location::LeftHall,
                                  Location::LeftCenter,  Location::Center,
                                  Location::RightCenter, Location::RightHall,
@@ -44,20 +34,147 @@ constexpr std::array const halls{Location::LeftWall,    Location::LeftHall,
 
 constexpr std::array const types{Type::A, Type::B, Type::C, Type::D};
 
-std::map<Types, std::array<Locations, 2>> const room_by_type{
-    {Type::A, {Location::A_Bottom, Location::A_Top}},
-    {Type::B, {Location::B_Bottom, Location::B_Top}},
-    {Type::C, {Location::C_Bottom, Location::C_Top}},
-    {Type::D, {Location::D_Bottom, Location::D_Top}}};
-
 std::array cost_by_type{1, 10, 100, 1000};
 
 } // namespace
 
-Organizer::Paths Organizer::generate_paths() {
+std::unique_ptr<Organizer> Organizer::createFolded() {
+  return std::unique_ptr<Organizer>{new Organizer(Folded{})};
+}
+
+std::unique_ptr<Organizer> Organizer::createUnfolded() {
+  return std::unique_ptr<Organizer>{new Organizer(Unfolded{})};
+}
+
+int Organizer::least_cost(Burrow const &burrow) {
+  auto prepared = prepare(burrow);
+  auto const cost = move(prepared);
+  return cost.value_or(0);
+}
+
+std::optional<int> Organizer::move(Burrow const &burrow) {
+  if (costs_.contains(burrow)) {
+    return costs_.at(burrow);
+  }
+
+  std::vector<int> costs{};
+  auto const moves = valid_moves(burrow);
+  for (auto const &valid_move : moves) {
+    auto const cost = move(valid_move.burrow);
+    if (cost.has_value()) {
+      costs.push_back(valid_move.cost + cost.value());
+    }
+  }
+
+  auto min_cost = std::min_element(costs.begin(), costs.end());
+  if (min_cost != costs.end()) {
+    costs_.emplace(burrow, *min_cost);
+    return *min_cost;
+  }
+
+  costs_.emplace(burrow, std::nullopt);
+  return {};
+}
+
+ValidMoves Organizer::valid_moves(Burrow const &burrow) {
+  ValidMoves moves{};
+
+  move_into_room(moves, burrow);
+  get_out_of_the_way_or_wrong_room(moves, burrow);
+
+  return moves;
+}
+
+Burrow Organizer::prepare(Burrow const &burrow) { return prepare_(burrow); }
+
+void Organizer::move_into_room(ValidMoves &moves, Burrow const &burrow) {
+  // for each spot in the hallway
+  for (auto hall : halls) {
+    auto const type = burrow.at(hall);
+    if (type != Type::None) {
+
+      // from bottom to top, find first empty or other
+      auto const &rooms = room_by_type_.at(type);
+      auto const room =
+          std::find_if(rooms.begin(), rooms.end(),
+                       [&](auto room) { return burrow.at(room) != type; });
+
+      // check if it's empty
+      if (room != rooms.end() && burrow.at(*room) == Type::None) {
+
+        // move if way is not obstructed
+        teleport_swap(*room, hall, type, moves, burrow);
+      }
+    }
+  }
+}
+
+void Organizer::get_out_of_the_way_or_wrong_room(ValidMoves &moves,
+                                                 Burrow const &burrow) {
+  // for each side room
+  for (auto const type : types) {
+
+    // from top to bottom, find first not empty
+    auto rooms = room_by_type_.at(type);
+    auto it = rooms.rbegin();
+    while (it != rooms.rend() && burrow.at(*it) == Type::None) {
+      ++it;
+    }
+
+    if (it != rooms.rend()) {
+      auto const room = *it;
+
+      // i'm in the wrong room
+      if (burrow.at(room) != type) {
+        auto const other = burrow.at(room);
+
+        // find a spot in the hallway
+        for (auto const hall : halls) {
+          if (burrow.at(hall) == Type::None) {
+            teleport_swap(room, hall, other, moves, burrow);
+          }
+        }
+      } else if (burrow.at(room) == type) {
+        // correct room, but check if someone else is behind me
+        if (std::any_of(it, rooms.rend(),
+                        [&](auto room) { return burrow.at(room) != type; })) {
+
+          // find a spot in the hallway
+          for (auto const hall : halls) {
+            if (burrow.at(hall) == Type::None) {
+              teleport_swap(room, hall, type, moves, burrow);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void Organizer::teleport_swap(Locations room, Locations hall, Types type,
+                              ValidMoves &moves, Burrow const &burrow) {
+  auto const &path = paths_.at({room, hall});
+  if (std::all_of(path.way.begin(), path.way.end(), [&](auto location) {
+        return burrow.at(location) == Type::None;
+      })) {
+    auto update = burrow;
+
+    std::swap(update.at(room), update.at(hall));
+
+    moves.push_back({update, path.cost * cost_by_type.at(type)});
+  }
+}
+
+Organizer::Paths Organizer::generate_paths(Rooms const &side_rooms,
+                                           PathLengths const &side_paths) {
   Paths paths{};
 
-  for (auto from : rooms) {
+  auto path_lengths = common_path_lengths;
+  for (auto const &side_path : side_paths) {
+    path_lengths.insert(side_path);
+  }
+
+  for (auto from : side_rooms) {
     Paths pathfinding{};
     std::set<Locations> visited{};
     std::map<Locations, int> unvisited{};
@@ -82,7 +199,8 @@ Organizer::Paths Organizer::generate_paths() {
 
         auto const forbidden =
             (std::find(halls.begin(), halls.end(), current) != halls.end()) &&
-            (std::find(rooms.begin(), rooms.end(), next) != rooms.end());
+            (std::find(side_rooms.begin(), side_rooms.end(), next) !=
+             side_rooms.end());
 
         if ((not forbidden) && (not visited.contains(next))) {
 
@@ -122,8 +240,8 @@ Organizer::Paths Organizer::generate_paths() {
     }
 
     for (auto const &path : pathfinding) {
-      if ((std::find(rooms.begin(), rooms.end(), path.first.room) !=
-           rooms.end()) &&
+      if ((std::find(side_rooms.begin(), side_rooms.end(), path.first.room) !=
+           side_rooms.end()) &&
           (std::find(halls.begin(), halls.end(), path.first.hall) !=
            halls.end())) {
         paths.emplace(path);
@@ -132,128 +250,6 @@ Organizer::Paths Organizer::generate_paths() {
   }
 
   return paths;
-}
-
-Organizer::Organizer() : paths_{generate_paths()} {
-  auto const organized = std::make_pair<Burrow, int>(
-      {Type::None, Type::None, Type::None, Type::None, Type::None, Type::None,
-       Type::None,
-
-       Type::A, Type::B, Type::C, Type::D, Type::A, Type::B, Type::C, Type::D},
-      0);
-
-  costs_.insert(organized);
-}
-
-std::optional<int> Organizer::move(Burrow const &burrow) {
-  if (costs_.contains(burrow)) {
-    return costs_.at(burrow);
-  }
-
-  std::vector<int> costs{};
-  auto const moves = valid_moves(burrow);
-  for (auto const &valid_move : moves) {
-    auto const cost = move(valid_move.burrow);
-    if (cost.has_value()) {
-      costs.push_back(valid_move.cost + cost.value());
-    }
-  }
-
-  auto min_cost = std::min_element(costs.begin(), costs.end());
-  if (min_cost != costs.end()) {
-    costs_.emplace(burrow, *min_cost);
-    return *min_cost;
-  }
-
-  costs_.emplace(burrow, std::nullopt);
-  return {};
-}
-
-ValidMoves Organizer::valid_moves(Burrow const &burrow) {
-  ValidMoves moves{};
-
-  // move from hallway into room
-
-  for (auto hall : halls) {
-    auto const type = burrow.at(hall);
-    if (type != Type::None) {
-      auto const &rooms = room_by_type.at(type);
-      auto const room =
-          std::find_if(rooms.begin(), rooms.end(),
-                       [&](auto room) { return burrow.at(room) != type; });
-      if (room != rooms.end()) {
-        if (burrow.at(*room) == Type::None) {
-          auto const &path = paths_.at({
-              *room,
-              hall,
-          });
-          if (std::all_of(path.way.begin(), path.way.end(), [&](auto loc) {
-                return burrow.at(loc) == Type::None;
-              })) {
-            auto update = burrow;
-            update.at(hall) = Type::None;
-            update.at(*room) = type;
-            moves.push_back({update, path.cost * cost_by_type.at(type)});
-          }
-        }
-      }
-    }
-  }
-
-  // move out of wrong room
-
-  for (auto const type : types) {
-    for (auto const room : room_by_type.at(type)) {
-
-      // todo : . . . <wrong> _ _ _
-      if (burrow.at(room) != Type::None && burrow.at(room) != type) {
-        auto const other = burrow.at(room);
-        for (auto const hall : halls) {
-          if (burrow.at(hall) == Type::None) {
-            auto const &path = paths_.at({room, hall});
-            if (std::all_of(path.way.begin(), path.way.end(), [&](auto loc) {
-                  return burrow.at(loc) == Type::None;
-                })) {
-              auto update = burrow;
-              update.at(room) = Type::None;
-              update.at(hall) = other;
-              moves.push_back({update, path.cost * cost_by_type.at(other)});
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // move out of own room because another amphipod is trapped
-  // . . . <ok> _ <wrong> _
-
-  for (auto const type : types) {
-    auto rooms = room_by_type.at(type);
-    auto it = rooms.rbegin();
-    while (it != rooms.rend() && burrow.at(*it) == Type::None) {
-      ++it;
-    }
-    if (it != rooms.rend() && burrow.at(*it) == type) {
-      auto const me = *it;
-      if (std::any_of(it, rooms.rend(),
-                      [&](auto room) { return burrow.at(room) != type; })) {
-        for (auto const hall : halls) {
-          auto const &path = paths_.at({me, hall});
-          if (std::all_of(path.way.begin(), path.way.end(), [&](auto loc) {
-                return burrow.at(loc) == Type::None;
-              })) {
-            auto update = burrow;
-            update.at(me) = Type::None;
-            update.at(hall) = type;
-            moves.push_back({update, path.cost * cost_by_type.at(type)});
-          }
-        }
-      }
-    }
-  }
-
-  return moves;
 }
 
 } // namespace amphipod

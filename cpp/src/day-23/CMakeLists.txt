@@ -1,5 +1,5 @@
 set(DAY 23)
-set(SOURCES amphipod.cc organizer.cc)
+set(SOURCES amphipod.cc organizer.cc folded.cc unfolded.cc)
 
 add_library(day-${DAY})
 target_sources(day-${DAY} PRIVATE ${SOURCES})

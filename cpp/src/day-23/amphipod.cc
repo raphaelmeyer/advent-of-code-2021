@@ -24,7 +24,8 @@ Burrow parse_input(std::istream &input) {
 
   auto loc = locations.begin();
   Burrow burrow{};
-  std::fill(burrow.begin(), burrow.end(), Type::None);
+  std::fill(burrow.begin(), burrow.end(), Type::Unused);
+  std::fill_n(burrow.begin(), 7, Type::None);
 
   return std::accumulate(std::istream_iterator<char>(input),
                          std::istream_iterator<char>(), burrow,
@@ -55,10 +56,13 @@ Burrow parse_input(std::istream &input) {
 }
 
 int organize(Burrow const &burrow) {
-  auto amphipod = std::make_unique<Organizer>();
+  auto organizer = Organizer::createFolded();
+  return organizer->least_cost(burrow);
+}
 
-  auto const cost = amphipod->move(burrow);
-  return cost.value_or(0);
+int organize_all(Burrow const &burrow) {
+  auto organizer = Organizer::createUnfolded();
+  return organizer->least_cost(burrow);
 }
 
 } // namespace amphipod
